@@ -59,18 +59,26 @@ sleep 1
 tmux new-window -t $SESSION -n mode
 
 if [ "$CHOICE" == "1" ]; then
-  # Mapping layout:
-  # [ gmapping | teleop ]
-  # [ rviz     |  ---   ]
+  # Mapping + Navigation (WITHOUT AMCL)
+  # Robot can be moved while mapping
 
   tmux send-keys -t $SESSION:1.0 "roslaunch mecanum_base_controller gmapping.launch" C-m
   sleep 1
 
   tmux split-window -h -t $SESSION:1
   tmux send-keys -t $SESSION:1.1 "rosrun teleop_twist_keyboard teleop_twist_keyboard.py" C-m
+  sleep 1
 
   tmux split-window -v -t $SESSION:1.0
-  tmux send-keys -t $SESSION:1.2 "rviz" C-m
+  tmux send-keys -t $SESSION:1.2 "rosrun mecanum_base_controller cmd_vel_to_wheels.py" C-m
+  sleep 1
+
+  tmux split-window -v -t $SESSION:1.1
+  tmux send-keys -t $SESSION:1.3 "roslaunch mecanum_base_controller move_base.launch" C-m
+  sleep 1
+
+  tmux new-window -t $SESSION -n rviz
+  tmux send-keys -t $SESSION:2 "rviz" C-m
 
 elif [ "$CHOICE" == "2" ]; then
   # Navigation layout:
