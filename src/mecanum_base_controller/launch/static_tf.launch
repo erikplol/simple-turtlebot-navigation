@@ -1,0 +1,20 @@
+<launch>
+
+  <!-- Arguments -->
+  <arg name="x"     default="0.18" />
+  <arg name="y"     default="0.0" />
+  <arg name="z"     default="0.20" />
+  <arg name="roll"  default="0.0" />
+  <arg name="pitch" default="0.0" />
+  <arg name="yaw"   default="0.0" />
+
+  <arg name="parent_frame" default="base_link" />
+  <arg name="child_frame"  default="laser" />
+
+  <!-- Static TF -->
+  <node pkg="tf"
+        type="static_transform_publisher"
+        name="base_to_laser_tf"
+        args="$(arg x) $(arg y) $(arg z) $(arg roll) $(arg pitch) $(arg yaw) $(arg parent_frame) $(arg child_frame) 100" />
+
+</launch>
