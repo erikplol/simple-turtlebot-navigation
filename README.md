@@ -1,61 +1,71 @@
-# ROS 1 Mecanum Navigation Stack – Summary & Runbook
+# ROS 1 Mecanum Navigation Stack – Summary & Runbook (Updated)
 
-This document summarizes the **complete ROS 1 (Noetic) navigation stack** for a **real 4-mecanum robot with RPLIDAR**, including **what each component does** and **what to run in each mode**.
+This document summarizes the **latest, recommended ROS 1 (Noetic) navigation stack** for a **real 4-mecanum robot with RPLIDAR**, aligned with the **current code structure, headless Raspberry Pi operation, tmux bringup, and RViz-on-laptop workflow**.
 
 ---
 
 ## 1. System Overview
 
-### High-level data flow
+### High-level data flow (authoritative)
 
 ```
-            move_base
-                │ /cmd_vel
-                ▼
-      cmd_vel_to_wheels.py
-                │ wheel speeds
-                ▼
-        Motor Driver / MCU
-                │ encoder ticks
-                ▼
-        mecanum_odometry.py
-                │ /odom + TF
-                ▼
-               AMCL  ◄──── map_server
-                │ TF (map → odom)
-                ▼
-            move_base
-                ▲
-                │ /scan
-             RPLIDAR
+RViz (Laptop)
+   │  /move_base_simple/goal
+   ▼
+move_base  (Robot)
+   │  /cmd_vel
+   ▼
+cmd_vel_to_wheels.py
+   │  wheel velocities
+   ▼
+Motor Driver / MCU
+   │  encoder ticks
+   ▼
+mecanum_odometry.py
+   │  /odom  +  TF (odom → base_link)
+   ▼
+AMCL  ◄────────── map_server
+   │  TF (map → odom)
+   ▼
+move_base
+   ▲
+   │  /scan
+RPLIDAR
 ```
 
 ---
 
-## 2. Required ROS Nodes & Packages
+## 2. Required ROS Packages (Current Stack)
 
-### Core robot nodes (custom)
+### Install set (Noetic)
 
-| Node                         | Purpose                                   |
-| ---------------------------- | ----------------------------------------- |
-| `cmd_vel_to_wheels.py`       | Convert `/cmd_vel` → mecanum wheel speeds |
-| `mecanum_odometry.py`        | Convert encoder ticks → `/odom` + TF      |
-| `static_transform_publisher` | Publish `base_link → laser`               |
+```
+ros-noetic-navigation
+ros-noetic-amcl
+ros-noetic-map-server
+ros-noetic-gmapping
+ros-noetic-teb-local-planner
+ros-noetic-rplidar-ros
+ros-noetic-tf2-tools
+ros-noetic-robot-state-publisher
+ros-noetic-teleop-twist-keyboard
+```
 
-### Standard ROS nodes
-
-| Node          | Purpose                   |
-| ------------- | ------------------------- |
-| `rplidar_ros` | Publish `/scan`           |
-| `map_server`  | Serve static map          |
-| `amcl`        | Lidar-based localization  |
-| `move_base`   | Global + local navigation |
+> `teb_local_planner` is recommended for **mecanum / holonomic motion**.
 
 ---
 
-## 3. TF Tree (MANDATORY)
+## 3. Custom Robot Nodes (Your Code)
 
-The TF tree **must look exactly like this**:
+| Node | Purpose |
+|-----|--------|
+| `cmd_vel_to_wheels.py` | Convert `/cmd_vel` → 4 mecanum wheel speeds |
+| `mecanum_odometry.py` | Encoder ticks → `/odom` + TF |
+| `static_tf.launch` | Publish `base_link → laser` |
+
+---
+
+## 4. TF Tree (MANDATORY & VERIFIED)
 
 ```
 map
@@ -64,150 +74,174 @@ map
            └── laser
 ```
 
-Check anytime with:
-
+Validation:
 ```bash
-rosrun tf view_frames
+rosrun tf2_tools view_frames.py
 ```
 
----
-
-## 4. Operating Modes
-
-There are **two modes**: **Mapping** (run once) and **Navigation** (daily use).
+If this tree is broken → **navigation will not work**.
 
 ---
 
-## MODE 1 — Mapping (Run Once)
+## 5. Operating Modes (Updated)
 
-Used only to **create the map**.
+There are **two supported modes**:
 
-### Nodes to run (order matters)
+| Mode | Purpose |
+|----|-------|
+| Mapping | Create static map (run once) |
+| Navigation | Daily autonomous operation |
 
-```bash
+---
+
+## MODE 1 — Mapping (NO AMCL, NO move_base)
+
+### Nodes launched
+
+```
 roscore
 ```
 
-```bash
+```
 roslaunch rplidar_ros rplidar.launch
 ```
 
-```bash
+```
 rosrun mecanum_base_controller mecanum_odometry.py
 ```
 
-```bash
+```
 roslaunch mecanum_base_controller static_tf.launch
 ```
 
-```bash
+```
 roslaunch mecanum_base_controller gmapping.launch
 ```
 
-### Drive the robot
+### Manual driving
 
-```bash
+```
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 ```
 
-Drive **slowly**, cover the whole area, avoid fast spins.
+Drive slowly, cover all reachable space.
 
-### Save the map
+### Save map
 
-```bash
+```
 rosrun map_server map_saver -f ~/catkin_ws/src/mecanum_base_controller/maps/map
 ```
 
-This creates:
-
+Creates:
 ```
-map.pgm
 map.yaml
+map.pgm
 ```
 
-🚫 **Stop `gmapping` after saving the map**.
+❗ Stop `gmapping` after saving.
 
 ---
 
-## MODE 2 — Localization + Navigation (Normal Operation)
+## MODE 2 — Navigation (Daily Use)
 
-Used for **daily autonomous navigation**.
+### Launch order (authoritative)
 
-### Nodes to run (order matters)
-
-#### 1. ROS core
-
-```bash
+#### 1. Core
+```
 roscore
 ```
 
 #### 2. Sensors
-
-```bash
+```
 roslaunch rplidar_ros rplidar.launch
 ```
 
 #### 3. Robot base
-
-```bash
+```
 rosrun mecanum_base_controller mecanum_odometry.py
 ```
 
-```bash
+```
 roslaunch mecanum_base_controller static_tf.launch
 ```
 
-```bash
+```
 rosrun mecanum_base_controller cmd_vel_to_wheels.py
 ```
 
 #### 4. Localization
-
-```bash
+```
 roslaunch mecanum_base_controller amcl.launch
 ```
 
 #### 5. Navigation
-
-```bash
+```
 roslaunch mecanum_base_controller move_base.launch
 ```
 
-#### 6. Visualization
+> `move_base` performs **both path planning and obstacle avoidance** via global + local planners.
 
-```bash
+---
+
+## 6. RViz (Laptop-Side)
+
+```
+export ROS_MASTER_URI=http://<ROBOT_IP>:11311
+export ROS_IP=<LAPTOP_IP>
 rviz
 ```
 
----
-
-## 5. RViz Workflow
-
-1. Set **Fixed Frame** → `map`
-2. Click **2D Pose Estimate** (initialize localization)
-3. Click **2D Nav Goal** (send navigation goal)
-4. Robot navigates autonomously
+RViz steps:
+1. Fixed Frame → `map`
+2. **2D Pose Estimate** (initialize AMCL)
+3. **2D Nav Goal** (send waypoint)
 
 ---
 
-## 6. Quick Health Checks
+## 7. Health & Debug Checklist
 
-```bash
-rostopic list
+### Topics
 ```
-
-```bash
-rostopic echo /cmd_vel
-```
-
-```bash
-rostopic echo /odom
-```
-
-```bash
 rostopic echo /scan
+rostopic echo /odom
+rostopic echo /cmd_vel
+rostopic echo /amcl_pose
 ```
 
-```bash
+### TF
+```
 rosrun tf tf_echo map base_link
 ```
+
+### move_base
+```
+rosnode info /move_base
+```
+
+---
+
+## 8. Headless Raspberry Pi Notes
+
+- No GUI required on robot
+- RViz runs on laptop only
+- tmux used for persistent bringup
+- Multiple SSH sessions supported
+
+---
+
+## 9. Authoritative Rule Set
+
+- Only **one** `/cmd_vel` publisher
+- Only **one** `roscore`
+- Never run `gmapping` and `amcl` together
+- TF must match section 4 exactly
+
+---
+
+## 10. Mental Model (Final)
+
+```
+Map → AMCL → move_base → cmd_vel → wheels → odom → TF → AMCL
+```
+
+If this loop is closed → navigation works.
