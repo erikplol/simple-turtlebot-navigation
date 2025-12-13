@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # =============================================================
-# TMUX RUN SCRIPT FOR ROS1 MECANUM ROBOT (INTERACTIVE)
+# TMUX RUN SCRIPT FOR ROS1 MECANUM ROBOT (INTERACTIVE + PANES)
 # =============================================================
 
 SESSION="mecanum"
 
 clear
 echo "=============================================="
-echo " ROS1 MECANUM ROBOT TMUX LAUNCHER"
+echo " ROS1 MECANUM ROBOT TMUX LAUNCHER (PANES)"
 echo "=============================================="
 echo ""
 echo "Select mode:"
@@ -28,83 +28,71 @@ if [ $? == 0 ]; then
   tmux kill-session -t $SESSION
 fi
 
-# Create tmux session
-tmux new-session -d -s $SESSION
+# -------------------------------------------------------------
+# Create session + base layout
+# -------------------------------------------------------------
+tmux new-session -d -s $SESSION -n core
 
-# -------------------------------------------------------------
-# Window 0 : roscore
-# -------------------------------------------------------------
-tmux rename-window -t $SESSION:0 roscore
-tmux send-keys -t $SESSION:0 "roscore" C-m
+# Pane layout:
+# [ roscore | lidar ]
+# [ odom    | static_tf ]
+
+tmux send-keys -t $SESSION:0.0 "roscore" C-m
 sleep 2
 
-# -------------------------------------------------------------
-# Window 1 : LiDAR
-# -------------------------------------------------------------
-tmux new-window -t $SESSION -n lidar
-tmux send-keys -t $SESSION:1 "roslaunch rplidar_ros rplidar.launch" C-m
+tmux split-window -h -t $SESSION:0
+tmux send-keys -t $SESSION:0.1 "roslaunch rplidar_ros rplidar.launch" C-m
 sleep 2
 
-# -------------------------------------------------------------
-# Window 2 : Odometry
-# -------------------------------------------------------------
-tmux new-window -t $SESSION -n odom
-tmux send-keys -t $SESSION:2 "rosrun mecanum_base_controller mecanum_odometry.py" C-m
+tmux split-window -v -t $SESSION:0.0
+tmux send-keys -t $SESSION:0.2 "rosrun mecanum_base_controller mecanum_odometry.py" C-m
 sleep 1
 
-# -------------------------------------------------------------
-# Window 3 : Static TF
-# -------------------------------------------------------------
-tmux new-window -t $SESSION -n static_tf
-tmux send-keys -t $SESSION:3 "roslaunch mecanum_base_controller static_tf.launch" C-m
+tmux split-window -v -t $SESSION:0.1
+tmux send-keys -t $SESSION:0.3 "roslaunch mecanum_base_controller static_tf.launch" C-m
 sleep 1
 
 # =============================================================
-# MODE-SPECIFIC WINDOWS
+# MODE-SPECIFIC WINDOW
 # =============================================================
+
+tmux new-window -t $SESSION -n mode
 
 if [ "$CHOICE" == "1" ]; then
-  
-  # -----------------------------------------------------------
-  # Window 4 : GMapping
-  # -----------------------------------------------------------
-  tmux new-window -t $SESSION -n gmapping
-  tmux send-keys -t $SESSION:4 "roslaunch mecanum_base_controller gmapping.launch" C-m
+  # Mapping layout:
+  # [ gmapping | teleop ]
+  # [ rviz     |  ---   ]
 
-  # -----------------------------------------------------------
-  # Window 5 : Teleop
-  # -----------------------------------------------------------
-  tmux new-window -t $SESSION -n teleop
-  tmux send-keys -t $SESSION:5 "rosrun teleop_twist_keyboard teleop_twist_keyboard.py" C-m
+  tmux send-keys -t $SESSION:1.0 "roslaunch mecanum_base_controller gmapping.launch" C-m
+  sleep 1
+
+  tmux split-window -h -t $SESSION:1
+  tmux send-keys -t $SESSION:1.1 "rosrun teleop_twist_keyboard teleop_twist_keyboard.py" C-m
+
+  tmux split-window -v -t $SESSION:1.0
+  tmux send-keys -t $SESSION:1.2 "rviz" C-m
 
 elif [ "$CHOICE" == "2" ]; then
+  # Navigation layout:
+  # [ cmd_vel | amcl ]
+  # [ move_base | rviz ]
 
-  # -----------------------------------------------------------
-  # Window 4 : cmd_vel → wheels
-  # -----------------------------------------------------------
-  tmux new-window -t $SESSION -n cmd_vel
-  tmux send-keys -t $SESSION:4 "rosrun mecanum_base_controller cmd_vel_to_wheels.py" C-m
+  tmux send-keys -t $SESSION:1.0 "rosrun mecanum_base_controller cmd_vel_to_wheels.py" C-m
   sleep 1
 
-  # -----------------------------------------------------------
-  # Window 5 : AMCL
-  # -----------------------------------------------------------
-  tmux new-window -t $SESSION -n amcl
-  tmux send-keys -t $SESSION:5 "roslaunch mecanum_base_controller amcl.launch" C-m
+  tmux split-window -h -t $SESSION:1
+  tmux send-keys -t $SESSION:1.1 "roslaunch mecanum_base_controller amcl.launch" C-m
   sleep 1
 
-  # -----------------------------------------------------------
-  # Window 6 : move_base
-  # -----------------------------------------------------------
-  tmux new-window -t $SESSION -n move_base
-  tmux send-keys -t $SESSION:6 "roslaunch mecanum_base_controller move_base.launch" C-m
+  tmux split-window -v -t $SESSION:1.0
+  tmux send-keys -t $SESSION:1.2 "roslaunch mecanum_base_controller move_base.launch" C-m
+
+  tmux split-window -v -t $SESSION:1.1
+  tmux send-keys -t $SESSION:1.3 "rviz" C-m
 fi
 
-# -------------------------------------------------------------
-# Final Window : RViz
-# -------------------------------------------------------------
-tmux new-window -t $SESSION -n rviz
-tmux send-keys -t $SESSION:7 "rviz" C-m
+# Arrange nicely
+tmux select-layout -t $SESSION tiled
 
-# Attach to tmux session
+# Attach
 tmux attach -t $SESSION
