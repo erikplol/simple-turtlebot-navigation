@@ -1,6 +1,6 @@
-# ROS 1 Mecanum Navigation Stack – Summary & Runbook (Updated)
+# ROS 1 Mecanum Navigation Stack
 
-This document summarizes the **latest, recommended ROS 1 (Noetic) navigation stack** for a **real 4-mecanum robot with RPLIDAR**, aligned with the **current code structure, headless Raspberry Pi operation, tmux bringup, and RViz-on-laptop workflow**.
+This document summarizes the **latest, recommended ROS 1 (Noetic) navigation stack** for a **4-mecanum robot with RPLIDAR**, aligned with the **current code structure, headless Raspberry Pi operation, tmux bringup, and RViz-on-laptop workflow**.
 
 ---
 
