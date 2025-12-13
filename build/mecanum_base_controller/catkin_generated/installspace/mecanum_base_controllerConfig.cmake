@@ -67,14 +67,14 @@ set(mecanum_base_controller_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(mecanum_base_controller_SOURCE_PREFIX /root/catkin_ws/src/mecanum_base_controller)
-  set(mecanum_base_controller_DEVEL_PREFIX /root/catkin_ws/devel)
+  set(mecanum_base_controller_SOURCE_PREFIX /home/ubuntu/simple-turtlebot-navigation/src/mecanum_base_controller)
+  set(mecanum_base_controller_DEVEL_PREFIX /home/ubuntu/simple-turtlebot-navigation/devel)
   set(mecanum_base_controller_INSTALL_PREFIX "")
   set(mecanum_base_controller_PREFIX ${mecanum_base_controller_DEVEL_PREFIX})
 else()
   set(mecanum_base_controller_SOURCE_PREFIX "")
   set(mecanum_base_controller_DEVEL_PREFIX "")
-  set(mecanum_base_controller_INSTALL_PREFIX /root/catkin_ws/install)
+  set(mecanum_base_controller_INSTALL_PREFIX /home/ubuntu/simple-turtlebot-navigation/install)
   set(mecanum_base_controller_PREFIX ${mecanum_base_controller_INSTALL_PREFIX})
 endif()
 
@@ -156,7 +156,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /root/catkin_ws/install/lib;/opt/ros/noetic/lib)
+    foreach(path /home/ubuntu/simple-turtlebot-navigation/install/lib;/home/ubuntu/simple-turtlebot-navigation/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

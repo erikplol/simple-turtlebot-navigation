@@ -1,4 +1,4 @@
-prefix=/root/catkin_ws/devel
+prefix=/home/ubuntu/simple-turtlebot-navigation/devel
 
 Name: mecanum_base_controller
 Description: Description of mecanum_base_controller

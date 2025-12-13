@@ -1,2 +1,2 @@
 mecanum_base_controller
--DCATKIN_DEVEL_PREFIX=/root/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/root/catkin_ws/install -G Unix Makefiles
+-DCATKIN_DEVEL_PREFIX=/home/ubuntu/simple-turtlebot-navigation/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/simple-turtlebot-navigation/install -G Unix Makefiles

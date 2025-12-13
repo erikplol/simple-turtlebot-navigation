@@ -4,5 +4,5 @@ PROJECT_PKG_CONFIG_INCLUDE_DIRS = "".split(';') if "" != "" else []
 PROJECT_CATKIN_DEPENDS = "".replace(';', ' ')
 PKG_CONFIG_LIBRARIES_WITH_PREFIX = "".split(';') if "" != "" else []
 PROJECT_NAME = "mecanum_base_controller"
-PROJECT_SPACE_DIR = "/root/catkin_ws/install"
+PROJECT_SPACE_DIR = "/home/ubuntu/simple-turtlebot-navigation/install"
 PROJECT_VERSION = "0.0.0"

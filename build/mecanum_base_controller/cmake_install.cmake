@@ -1,8 +1,8 @@
-# Install script for directory: /root/catkin_ws/src/mecanum_base_controller
+# Install script for directory: /home/ubuntu/simple-turtlebot-navigation/src/mecanum_base_controller
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/root/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/ubuntu/simple-turtlebot-navigation/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,17 +38,17 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/root/catkin_ws/build/mecanum_base_controller/catkin_generated/installspace/mecanum_base_controller.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/ubuntu/simple-turtlebot-navigation/build/mecanum_base_controller/catkin_generated/installspace/mecanum_base_controller.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/mecanum_base_controller/cmake" TYPE FILE FILES
-    "/root/catkin_ws/build/mecanum_base_controller/catkin_generated/installspace/mecanum_base_controllerConfig.cmake"
-    "/root/catkin_ws/build/mecanum_base_controller/catkin_generated/installspace/mecanum_base_controllerConfig-version.cmake"
+    "/home/ubuntu/simple-turtlebot-navigation/build/mecanum_base_controller/catkin_generated/installspace/mecanum_base_controllerConfig.cmake"
+    "/home/ubuntu/simple-turtlebot-navigation/build/mecanum_base_controller/catkin_generated/installspace/mecanum_base_controllerConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/mecanum_base_controller" TYPE FILE FILES "/root/catkin_ws/src/mecanum_base_controller/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/mecanum_base_controller" TYPE FILE FILES "/home/ubuntu/simple-turtlebot-navigation/src/mecanum_base_controller/package.xml")
 endif()
 

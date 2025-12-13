@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /root/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/ubuntu/simple-turtlebot-navigation/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /root/catkin_ws/build
+CMAKE_BINARY_DIR = /home/ubuntu/simple-turtlebot-navigation/build
 
 # Utility rule file for std_msgs_generate_messages_py.
 
@@ -63,10 +63,10 @@ mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/build: std_
 .PHONY : mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/build
 
 mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/clean:
-	cd /root/catkin_ws/build/mecanum_base_controller && $(CMAKE_COMMAND) -P CMakeFiles/std_msgs_generate_messages_py.dir/cmake_clean.cmake
+	cd /home/ubuntu/simple-turtlebot-navigation/build/mecanum_base_controller && $(CMAKE_COMMAND) -P CMakeFiles/std_msgs_generate_messages_py.dir/cmake_clean.cmake
 .PHONY : mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 
 mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/depend:
-	cd /root/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/catkin_ws/src /root/catkin_ws/src/mecanum_base_controller /root/catkin_ws/build /root/catkin_ws/build/mecanum_base_controller /root/catkin_ws/build/mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ubuntu/simple-turtlebot-navigation/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/simple-turtlebot-navigation/src /home/ubuntu/simple-turtlebot-navigation/src/mecanum_base_controller /home/ubuntu/simple-turtlebot-navigation/build /home/ubuntu/simple-turtlebot-navigation/build/mecanum_base_controller /home/ubuntu/simple-turtlebot-navigation/build/mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : mecanum_base_controller/CMakeFiles/std_msgs_generate_messages_py.dir/depend
 
