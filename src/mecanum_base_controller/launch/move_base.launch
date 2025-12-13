@@ -1,0 +1,13 @@
+<launch>
+  <node pkg="move_base" type="move_base" name="move_base" output="screen">
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+
+    <rosparam file="$(find mecanum_base_controller)/config/costmap_common.yaml" command="load"/>
+    <rosparam file="$(find mecanum_base_controller)/config/local_costmap.yaml" command="load"/>
+    <rosparam file="$(find mecanum_base_controller)/config/global_costmap.yaml" command="load"/>
+    <rosparam file="$(find mecanum_base_controller)/config/teb.yaml" command="load"/>
+
+  </node>
+</launch>

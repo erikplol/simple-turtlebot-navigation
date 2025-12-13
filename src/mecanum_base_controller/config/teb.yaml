@@ -1,0 +1,19 @@
+TebLocalPlannerROS:
+  odom_topic: odom
+  map_frame: map
+
+  holonomic_robot: true
+  max_vel_x: 0.4
+  max_vel_y: 0.4
+  max_vel_theta: 0.8
+
+  acc_lim_x: 0.5
+  acc_lim_y: 0.5
+  acc_lim_theta: 1.0
+
+  footprint_model:
+    type: polygon
+    vertices: [[0.25,0.20],[0.25,-0.20],[-0.25,-0.20],[-0.25,0.20]]
+
+  min_obstacle_dist: 0.3
+  inflation_dist: 0.5
