@@ -46,11 +46,11 @@ tmux send-keys -t $SESSION:0.4 "~/simple-turtlebot-navigation/scripts/run_cmd_ve
 sleep 2
 
 # Pane 5: AMCL
-tmux send-keys -t $SESSION:0.5 "~/simple-turtlebot-navigation/scripts/run_amcl.sh" C-m
+tmux send-keys -t $SESSION:0.5 "" C-m
 sleep 3  # give AMCL time to initialize
 
 # Pane 6: move_base
-tmux send-keys -t $SESSION:0.6 "~/simple-turtlebot-navigation/scripts/run_move_base.sh" C-m
+tmux send-keys -t $SESSION:0.6 "" C-m
 sleep 2
 
 # Pane 7: idle / monitor
