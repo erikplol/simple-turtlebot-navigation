@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+SESSION="mecanum_mapping"
+ROS_DISTRO=noetic
+CATKIN_WS=~/catkin_ws
+
+# ---------------- ROS ENV ----------------
+source /opt/ros/$ROS_DISTRO/setup.bash
+[ -f $CATKIN_WS/devel/setup.bash ] && source $CATKIN_WS/devel/setup.bash
+
+export ROS_MASTER_URI=http://localhost:11311
+export ROS_IP=$(hostname -I | awk '{print $1}')
+
+# kill existing session if exists
+tmux has-session -t $SESSION 2>/dev/null && tmux kill-session -t $SESSION
+
+# ---------------- TMUX SESSION ----------------
+tmux new-session -d -s $SESSION -n all_in_one
+
+# ---------------- panes ----------------
+# Pane 0: roscore
+tmux send-keys -t $SESSION:all_in_one.0 "source $CATKIN_devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && roscore" C-m
+sleep 2
+
+# Pane 1: rplidar
+tmux split-window -h -t $SESSION:all_in_one
+tmux send-keys -t $SESSION:all_in_one.1 "source $CATKIN_WS/devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && roslaunch rplidar_ros rplidar.launch" C-m
+sleep 1
+
+# Pane 2: odometry
+tmux split-window -v -t $SESSION:all_in_one.0
+tmux send-keys -t $SESSION:all_in_one.2 "source $CATKIN_WS/devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && rosrun mecanum_base_controller mecanum_odometry.py" C-m
+sleep 1
+
+# Pane 3: static TF
+tmux split-window -v -t $SESSION:all_in_one.1
+tmux send-keys -t $SESSION:all_in_one.3 "source $CATKIN_WS/devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && roslaunch mecanum_base_controller static_tf.launch" C-m
+sleep 1
+
+# Pane 4: gmapping
+tmux split-window -v -t $SESSION:all_in_one.2
+tmux send-keys -t $SESSION:all_in_one.4 "source $CATKIN_WS/devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && roslaunch mecanum_base_controller gmapping.launch" C-m
+sleep 1
+
+# Pane 5: cmd_vel → wheels
+tmux split-window -h -t $SESSION:all_in_one.4
+tmux send-keys -t $SESSION:all_in_one.5 "source $CATKIN_WS/devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && rosrun mecanum_base_controller cmd_vel_to_wheels.py" C-m
+sleep 1
+
+# Pane 6: move_base
+tmux split-window -v -t $SESSION:all_in_one.5
+tmux send-keys -t $SESSION:all_in_one.6 "source $CATKIN_WS/devel/setup.bash && source /opt/ros/$ROS_DISTRO/setup.bash && roslaunch mecanum_base_controller move_base.launch" C-m
+sleep 1
+
+# tidy layout
+tmux select-layout -t $SESSION:all_in_one tiled
+
+# attach
+tmux attach -t $SESSION

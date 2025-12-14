@@ -54,7 +54,7 @@ tmux send-keys -t $SESSION:0.6 "~/simple-turtlebot-navigation/scripts/run_move_b
 sleep 2
 
 # Pane 7: idle / monitor
-tmux send-keys -t $SESSION:0.7 "echo 'Idle Pane 7 – monitoring or rostopic echo'" C-m
+tmux send-keys -t $SESSION:0.7 "rosrun map_server map_server ~/simple-turtlebot-navigation/map/map.yaml'" C-m
 
 # Pane 8: idle / monitor
 tmux send-keys -t $SESSION:0.8 "echo 'Idle Pane 8 – monitoring or rqt'" C-m
